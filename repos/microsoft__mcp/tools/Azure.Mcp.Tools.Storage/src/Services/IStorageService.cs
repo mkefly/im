@@ -1,0 +1,62 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using Azure.Mcp.Core.Services.Azure;
+using Azure.Mcp.Tools.Storage.Models;
+
+namespace Azure.Mcp.Tools.Storage.Services;
+
+public interface IStorageService
+{
+    Task<ResourceQueryResults<StorageAccountInfo>> GetAccountDetails(
+        string? account,
+        string subscription,
+        string? resourceGroup = null,
+        string? tenant = null,
+        CancellationToken cancellationToken = default);
+
+    Task<StorageAccountResult> CreateStorageAccount(
+        string account,
+        string resourceGroup,
+        string location,
+        string subscription,
+        string? sku = null,
+        string? accessTier = null,
+        bool? enableHierarchicalNamespace = null,
+        string? tenant = null,
+        CancellationToken cancellationToken = default);
+
+    Task<List<BlobInfo>> GetBlobDetails(
+        string account,
+        string container,
+        string? blob,
+        string? prefix = null,
+        string? tenant = null,
+        CancellationToken cancellationToken = default);
+
+    Task<List<ContainerInfo>> GetContainerDetails(
+        string account,
+        string? container,
+        string? prefix = null,
+        string? tenant = null,
+        CancellationToken cancellationToken = default);
+
+    Task<ContainerInfo> CreateContainer(
+        string account,
+        string container,
+        string? tenant = null,
+        CancellationToken cancellationToken = default);
+
+    Task<BlobUploadResult> UploadBlob(
+        string account,
+        string container,
+        string blob,
+        string localFilePath,
+        string? tenant = null,
+        CancellationToken cancellationToken = default);
+
+    Task<List<string>> ListTables(
+        string account,
+        string? tenant = null,
+        CancellationToken cancellationToken = default);
+}

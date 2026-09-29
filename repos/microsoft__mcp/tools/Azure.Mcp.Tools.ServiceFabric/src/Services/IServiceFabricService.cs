@@ -1,0 +1,34 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using Azure.Mcp.Tools.ServiceFabric.Models;
+
+namespace Azure.Mcp.Tools.ServiceFabric.Services;
+
+public interface IServiceFabricService
+{
+    Task<List<ManagedClusterNode>> ListManagedClusterNodes(
+        string subscription,
+        string resourceGroup,
+        string clusterName,
+        string? tenant = null,
+        CancellationToken cancellationToken = default);
+
+    Task<ManagedClusterNode> GetManagedClusterNode(
+        string subscription,
+        string resourceGroup,
+        string clusterName,
+        string nodeName,
+        string? tenant = null,
+        CancellationToken cancellationToken = default);
+
+    Task<RestartNodeResponse> RestartManagedClusterNodes(
+        string subscription,
+        string resourceGroup,
+        string clusterName,
+        string nodeType,
+        string[] nodes,
+        UpdateType updateType = UpdateType.Default,
+        string? tenant = null,
+        CancellationToken cancellationToken = default);
+}

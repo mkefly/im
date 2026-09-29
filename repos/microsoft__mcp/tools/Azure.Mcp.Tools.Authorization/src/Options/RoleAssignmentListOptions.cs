@@ -1,0 +1,19 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using Azure.Mcp.Core.Options;
+using Microsoft.Mcp.Core.Options;
+
+namespace Azure.Mcp.Tools.Authorization.Options;
+
+public sealed class RoleAssignmentListOptions : ISubscriptionOption
+{
+    [Option(Description = "Scope at which the role assignment applies, e.g., /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333, /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333/resourceGroups/myGroup, /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333/resourceGroups/myGroup/providers/Microsoft.Compute/virtualMachines/myVM, or /providers/Microsoft.Management/managementGroups/myManagementGroup.")]
+    public required string Scope { get; set; }
+
+    [Option(Description = OptionDescriptions.Tenant)]
+    public string? Tenant { get; set; }
+
+    [Option(Description = OptionDescriptions.Subscription + " Must not be specified when the scope is a management group.")]
+    public string? Subscription { get; set; }
+}

@@ -1,0 +1,52 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using Azure.Mcp.Tools.KeyVault.Models;
+using Azure.Mcp.Tools.KeyVault.Options.Key;
+using Azure.Mcp.Tools.KeyVault.Services;
+using Microsoft.Extensions.Logging;
+using Microsoft.Mcp.Core.Commands;
+using Microsoft.Mcp.Core.Models.Command;
+
+namespace Azure.Mcp.Tools.KeyVault.Commands.Key;
+
+[CommandMetadata(
+    Id = "ef27bda9-8a1f-4288-b68b-12308ab8e607",
+    Name = "create",
+    Title = "Create Key Vault Key",
+    Description = "Create a new key in an Azure Key Vault. This command creates a key with the specified name and type in the given vault. Supports types: RSA, RSA-HSM, EC, EC-HSM (RSA-HSM and EC-HSM require a premium SKU vault). Required: --vault <vault>, --key <key> --key-type <key-type>. Optional: --tenant <tenant>. Returns: name, id, keyId, keyType, enabled, notBefore, expiresOn, createdOn, updatedOn. Creates a new key version if it already exists.",
+    OperationPlane = ToolOperationPlane.Data,
+    Destructive = true,
+    Idempotent = false,
+    OpenWorld = false,
+    ReadOnly = false,
+    Secret = false,
+    LocalRequired = false)]
+public sealed class KeyCreateCommand(ILogger<KeyCreateCommand> logger, IKeyVaultService keyVaultService)
+    : AuthenticatedCommand<KeyCreateOptions, KeyDetails>
+{
+    private readonly ILogger<KeyCreateCommand> _logger = logger;
+    private readonly IKeyVaultService _keyVaultService = keyVaultService;
+
+    public override async Task<CommandResponse> ExecuteAsync(CommandContext context, KeyCreateOptions options, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var key = await _keyVaultService.CreateKey(
+                options.Vault,
+                options.Key,
+                options.KeyType,
+                options.Tenant,
+                cancellationToken);
+
+            context.Response.Results = ResponseResult.Create(KeyDetails.FromKey(key), KeyVaultJsonContext.Default.KeyDetails);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating key {Key} in vault {VaultName}", options.Key, options.Vault);
+            HandleException(context, ex);
+        }
+
+        return context.Response;
+    }
+}
